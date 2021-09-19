@@ -1,14 +1,18 @@
 #ifndef LOSSYCOMPRESSOR_H
 #define LOSSYCOMPRESSOR_H
 
+
 #include <iostream>
 #include <vector>
-#include <map>
+#include <list>
+#include <cmath>
+#include <algorithm>
+#include <random>
 #include <Eigen/Dense>
 
 #include "WaterItem.h"
 #include "ColorSet.h"
-#include "OptiChain.h"
+#include "HeightLine.h"
 
 #define WITH_QT
 
@@ -16,8 +20,30 @@
     #include <QObject>
 #endif
 
-using namespace Eigen;
+class gene
+{
+public:
+    gene();
+    gene(ushort);
 
+
+    bool isCaculated() const;
+    float getFitness() const;
+    ushort size() const;
+    const Eigen::Array<uchar,Eigen::Dynamic,1> & getDNA() const;
+
+    void initialize(ushort size);
+    void caculateFitness(const TokiColor*[],ushort maxHeight);
+    static void crossover(gene* ,gene*,ushort idx);
+    void mutate(ushort idx);
+    //void setDNAValue(uchar val,ushort idx);
+private:
+    float fitness;
+    Eigen::Array<uchar,Eigen::Dynamic,1> DNA;
+
+    static const float unCaculatedSign;
+    static const uchar mutateMap[3][2];
+};
 
 #ifdef WITH_QT
 class LossyCompressor : public QObject
@@ -32,12 +58,13 @@ public:
     LossyCompressor();
 #endif
 
-    void setSource(const ArrayXi & ,const TokiColor *[],ushort col);
+    void setSource(const Eigen::ArrayXi & ,const TokiColor *[],ushort col);
     bool compress(ushort maxHeight,bool allowNaturalCompress);
-    const ArrayXi & getBase() const;
-    const ArrayXi & getHighLine() const;
-    const ArrayXi & getLowLine() const;
+    const Eigen::ArrayXi & getBase() const;
+    const Eigen::ArrayXi & getHighLine() const;
+    const Eigen::ArrayXi & getLowLine() const;
     const std::map<TokiPos,waterItem> & getWaterList() const;
+    const gene& getResult() const;
 #ifdef WITH_QT
 signals:
     void progressRangeSet(int min,int max,int val);
@@ -47,10 +74,27 @@ signals:
 
 private:
     std::vector<const TokiColor*> source;
-    ArrayXi mapColor;
-    ushort col;
-    std::map<TokiPos,waterItem> waterList;
+    std::vector<gene> population;
+    ushort maxHeight;
+    ushort eliteIdx;
+    ushort generation;
+    ushort failTimes;
 
+    static const ushort popSize;
+    static const ushort maxFailTimes;
+    static const ushort maxGeneration;
+    static const double crossoverProb;
+    static const double mutateProb;
+    static const double initializeNonZeroRatio;
+
+    void runGenetic();
+
+    void initialize();
+    void caculateFitness();
+    void select();
+    void crossover();
+    void mutate();
 };
 
+double randD();
 #endif // LOSSYCOMPRESSOR_H
