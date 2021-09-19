@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "lossyCompressor.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class DebugWind; }
 QT_END_NAMESPACE
