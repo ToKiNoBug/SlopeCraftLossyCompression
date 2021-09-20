@@ -75,7 +75,7 @@ void DebugWind::initialize() {
 
     {
         QImage raw;
-        raw.load("D:/Git/20_1by1_white.png");
+        raw.load("D:/Git/25_ruby_std.png");
         EImage rawE=QImage2EImage(raw);
         bool allowed[64]={0};
         for (ushort baseColor=1;baseColor<64;baseColor++)
@@ -181,6 +181,9 @@ void DebugWind::on_BtnCompress_clicked() {
 
     CHL.make(&currentCol[0],
             Compressor->getResult().getDNA(),ui->allowNatural->isChecked());
+//fitness=100.0/(1e-3f+sumColorDiff)
+    std::cerr<<"compressed sumColorDiff="
+        <<100.0/Compressor->getResult().getFitness()-1e-3f<<std::endl;
     QImage tempImg=EImage2QImage(CHL.toImg(),3);
 
     ui->ShowCompressed->setPixmap(QPixmap::fromImage(tempImg));

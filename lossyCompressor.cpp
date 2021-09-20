@@ -5,7 +5,7 @@ const uchar gene::mutateMap[3][2]={{1,2},{0,2},{0,1}};
 
 const ushort LossyCompressor::popSize=50;
 const ushort LossyCompressor::maxFailTimes=30;
-const ushort LossyCompressor::maxGeneration=200;
+const ushort LossyCompressor::maxGeneration=600;
 const double LossyCompressor::crossoverProb=0.9;
 const double LossyCompressor::mutateProb=0.01;
 const double LossyCompressor::initializeNonZeroRatio=0.05;
