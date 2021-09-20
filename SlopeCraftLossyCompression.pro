@@ -16,9 +16,13 @@ INCLUDEPATH += D:/eigen-3.3.9 \
 SOURCES += \
     ../SlopeCraft/Kernel/CIEDE00.cpp \
     ../SlopeCraft/Kernel/HeightLine.cpp \
+    ../SlopeCraft/Kernel/NBTWriter.cpp \
     ../SlopeCraft/Kernel/OptiChain.cpp \
+    ../SlopeCraft/Kernel/PrimGlassBuilder.cpp \
+    ../SlopeCraft/Kernel/TokiSlopeCraft.cpp \
     ../SlopeCraft/Kernel/WaterItem.cpp \
     ../SlopeCraft/Kernel/colorset.cpp \
+    ../SlopeCraft/Kernel/simpleBlock.cpp \
     ../SlopeCraft/Kernel/tokicolor.cpp \
     lossyCompressor.cpp \
     main.cpp \
@@ -27,9 +31,13 @@ SOURCES += \
 HEADERS += \
     ../SlopeCraft/Kernel/ColorSet.h \
     ../SlopeCraft/Kernel/HeightLine.h \
+    ../SlopeCraft/Kernel/NBTWriter.h \
     ../SlopeCraft/Kernel/OptiChain.h \
+    ../SlopeCraft/Kernel/PrimGlassBuilder.h \
     ../SlopeCraft/Kernel/TokiColor.h \
+    ../SlopeCraft/Kernel/TokiSlopeCraft.h \
     ../SlopeCraft/Kernel/WaterItem.h \
+    ../SlopeCraft/Kernel/simpleBlock.h \
     debugwind.h \
     lossyCompressor.h
 

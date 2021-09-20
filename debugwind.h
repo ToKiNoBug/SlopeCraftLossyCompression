@@ -17,14 +17,20 @@ public:
     DebugWind(QWidget *parent = nullptr);
     ~DebugWind();
 
+    void initialize();
 private slots:
     void progressRangeSet(int min,int max,int val);
     void progressAdd(int);
     void keepAwake();
+    void on_BtnLoad_clicked();
+
 private:
     Ui::DebugWind *ui;
     TokiSlopeCraft * Kernel;
     LossyCompressor * Compressor;
-    void initialize();
+    std::vector<const TokiColor*>currentCol;
 };
+
+EImage QImage2EImage(const QImage&);
+QImage EImage2QImage(const EImage & ei,ushort=1);
 #endif // DEBUGWIND_H

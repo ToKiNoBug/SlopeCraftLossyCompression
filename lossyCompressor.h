@@ -33,7 +33,7 @@ public:
     const Eigen::Array<uchar,Eigen::Dynamic,1> & getDNA() const;
 
     void initialize(ushort size);
-    void caculateFitness(const TokiColor*[],ushort maxHeight);
+    void caculateFitness(const TokiColor*[],ushort maxHeight,bool allowNaturalCompress);
     static void crossover(gene* ,gene*,ushort idx);
     void mutate(ushort idx);
     //void setDNAValue(uchar val,ushort idx);
@@ -58,12 +58,8 @@ public:
     LossyCompressor();
 #endif
 
-    void setSource(const Eigen::ArrayXi & ,const TokiColor *[],ushort col);
-    bool compress(ushort maxHeight,bool allowNaturalCompress);
-    const Eigen::ArrayXi & getBase() const;
-    const Eigen::ArrayXi & getHighLine() const;
-    const Eigen::ArrayXi & getLowLine() const;
-    const std::map<TokiPos,waterItem> & getWaterList() const;
+    void setSource(const Eigen::ArrayXi & ,const TokiColor *[]);
+    bool compress(ushort maxHeight,bool allowNaturalCompress=false);
     const gene& getResult() const;
 #ifdef WITH_QT
 signals:
@@ -79,6 +75,7 @@ signals:
 private:
     std::vector<const TokiColor*> source;
     std::vector<gene> population;
+    bool allowNaturalCompress;
     ushort maxHeight;
     ushort eliteIdx;
     ushort generation;

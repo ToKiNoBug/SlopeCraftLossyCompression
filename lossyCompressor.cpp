@@ -43,11 +43,12 @@ const Eigen::Array<uchar,Eigen::Dynamic,1> & gene::getDNA() const {
 void gene::initialize(ushort size) {
     DNA.setZero(size);
 }
-void gene::caculateFitness(const TokiColor** src,ushort maxHeight) {
+void gene::caculateFitness(const TokiColor** src,ushort maxHeight,
+                           bool allowNaturalCompress) {
     if(isCaculated())return;
 
     HeightLine HL;
-    float sumColorDiff=HL.make(src,DNA);
+    float sumColorDiff=HL.make(src,DNA,allowNaturalCompress);
     if(HL.maxHeight()>maxHeight) {
         fitness=maxHeight-HL.maxHeight();
     } else {
@@ -87,7 +88,7 @@ void LossyCompressor::initialize() {
 
 void LossyCompressor::caculateFitness() {
     for(ushort i=0;i<popSize;i++)
-        population[i].caculateFitness(&source[0],maxHeight);
+        population[i].caculateFitness(&source[0],maxHeight,allowNaturalCompress);
 }
 
 void LossyCompressor::select() {
@@ -177,4 +178,23 @@ void LossyCompressor::runGenetic() {
         emit progressAdd(1);
     }
     emit progressRangeSet(0,maxGeneration,maxGeneration);
+}
+
+void LossyCompressor::setSource(const Eigen::ArrayXi & _base,
+                                const TokiColor ** src) {
+    source.resize(_base.rows());
+    for(ushort idx=0;idx<_base.rows();idx++)
+        source[idx]=src[idx];
+    source.shrink_to_fit();
+}
+
+
+bool LossyCompressor::compress(ushort _maxHeight,bool _allowNaturalCompress) {
+    allowNaturalCompress=_allowNaturalCompress;
+    maxHeight=_maxHeight;
+    runGenetic();
+}
+
+const gene& LossyCompressor::getResult() const {
+    return population[eliteIdx];
 }
