@@ -154,8 +154,11 @@ void DebugWind::on_BtnLoad_clicked() {
 
     Eigen::Array<uchar,Eigen::Dynamic,1> temp;
     temp.setZero(currentCol.size());
+    float sumDiff=
     HL.make(&currentCol[0],temp,ui->allowNatural->isChecked());
 
+    qDebug()<<"压缩前sumColorDiff="<<sumDiff;
+    std::cerr<<"HL.size="<<HL.getBase().size()<<std::endl;
     QImage tempImg=EImage2QImage(HL.toImg(),3);
 
     ui->ShowRaw->setPixmap(QPixmap::fromImage(tempImg));
@@ -167,17 +170,19 @@ void DebugWind::on_BtnLoad_clicked() {
 
 
 void DebugWind::on_BtnCompress_clicked() {
+    CHL=HL;
+    Compressor->setSource(HL.getBase(),&currentCol[0]);
     bool success=Compressor->compress(ui->maxHeight->value(),
                          ui->allowNatural->isChecked());
     if(success)
-        std::cerr<<"压缩成功"<<std::endl;
+        std::cerr<<"Compress succeed"<<std::endl;
     else
-        std::cerr<<"压缩失败"<<std::endl;
+        std::cerr<<"Compress failed"<<std::endl;
 
-    HL.make(&currentCol[0],
+    CHL.make(&currentCol[0],
             Compressor->getResult().getDNA(),ui->allowNatural->isChecked());
-    QImage tempImg=EImage2QImage(HL.toImg(),3);
+    QImage tempImg=EImage2QImage(CHL.toImg(),3);
 
-    ui->ShowRaw->setPixmap(QPixmap::fromImage(tempImg));
+    ui->ShowCompressed->setPixmap(QPixmap::fromImage(tempImg));
 }
 

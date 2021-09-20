@@ -33,6 +33,7 @@ private:
     std::vector<const TokiColor*>currentCol;
 
     HeightLine HL;
+    HeightLine CHL;
 };
 
 EImage QImage2EImage(const QImage&);

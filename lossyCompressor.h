@@ -33,7 +33,7 @@ public:
     const Eigen::Array<uchar,Eigen::Dynamic,1> & getDNA() const;
 
     void initialize(ushort size);
-    void caculateFitness(const TokiColor*[],ushort maxHeight,bool allowNaturalCompress);
+    void caculateFitness(const TokiColor**,ushort maxHeight,bool allowNaturalCompress);
     static void crossover(gene* ,gene*,ushort idx);
     void mutate(ushort idx);
     //void setDNAValue(uchar val,ushort idx);

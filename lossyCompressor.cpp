@@ -41,6 +41,7 @@ const Eigen::Array<uchar,Eigen::Dynamic,1> & gene::getDNA() const {
     return DNA;
 }
 void gene::initialize(ushort size) {
+    fitness=unCaculatedSign;
     DNA.setZero(size);
 }
 void gene::caculateFitness(const TokiColor** src,ushort maxHeight,
@@ -48,9 +49,13 @@ void gene::caculateFitness(const TokiColor** src,ushort maxHeight,
     if(isCaculated())return;
 
     HeightLine HL;
+    //std::cerr<<"start to make\n";
     float sumColorDiff=HL.make(src,DNA,allowNaturalCompress);
+
+    //std::cerr<<"sumColorDiff="<<sumColorDiff<<std::endl;
+
     if(HL.maxHeight()>maxHeight) {
-        fitness=maxHeight-HL.maxHeight();
+        fitness=maxHeight-HL.maxHeight()-1;
     } else {
         fitness=100.0/(1e-3f+sumColorDiff);
     }
@@ -84,11 +89,13 @@ void LossyCompressor::initialize() {
                 population[i].mutate(r);
         }
     }
+    //std::cerr<<"population initialized\n";
 }
 
 void LossyCompressor::caculateFitness() {
     for(ushort i=0;i<popSize;i++)
         population[i].caculateFitness(&source[0],maxHeight,allowNaturalCompress);
+    //std::cerr<<"population fitnesses caculated\n";
 }
 
 void LossyCompressor::select() {
@@ -154,44 +161,56 @@ void LossyCompressor::runGenetic() {
     initialize();
     failTimes=0;
     generation=0;
-    emit progressRangeSet(0,0,maxGeneration);
+    emit progressRangeSet(0,maxGeneration,0);
     while(true) {
         emit keepAwake();
+        //std::cerr<<"start!\n";
         caculateFitness();
+        //std::cerr<<"caculateFitness\n";
         select();
-
+        //std::cerr<<"select\n";
         if(population[eliteIdx].getFitness()>0&&failTimes>=maxFailTimes) {
-            std::cerr<<"迭代成功，自然结束"<<std::endl;
+            std::cerr<<"iteration success"<<std::endl;
             break;
         }
         if(generation>=maxGeneration) {
             if(population[eliteIdx].getFitness()>0)
-                std::cerr<<"迭代成功,代数过高，结束"<<std::endl;
+                std::cerr<<"iteration success"<<std::endl;
             else
-                std::cerr<<"迭代失败"<<std::endl;
+                std::cerr<<"iteration failed"<<std::endl;
             break;
         }
 
         crossover();
+        //std::cerr<<"crossover\n";
         mutate();
+        //std::cerr<<"mutate\n";
         generation++;
+        //std::cerr<<"generation"<<generation<<std::endl;
         emit progressAdd(1);
     }
+    std::cerr<<"result fitness="<<getResult().getFitness()<<std::endl;
     emit progressRangeSet(0,maxGeneration,maxGeneration);
 }
 
 void LossyCompressor::setSource(const Eigen::ArrayXi & _base,
                                 const TokiColor ** src) {
-    source.resize(_base.rows());
-    for(ushort idx=0;idx<_base.rows();idx++)
+    source.resize(_base.rows()-1);
+
+    for(ushort idx=0;idx<_base.rows()-1;idx++) {
+        //std::cout<<"check row"<<idx<<"->"<<ushort(src[idx]->Result)<<std::endl;
         source[idx]=src[idx];
+    }
     source.shrink_to_fit();
+    //std::cerr<<"source set\n";
 }
 
 
 bool LossyCompressor::compress(ushort _maxHeight,bool _allowNaturalCompress) {
     allowNaturalCompress=_allowNaturalCompress;
     maxHeight=_maxHeight;
+    eliteIdx=65535;
+    qDebug("参数设置完毕，开始运行遗传算法");
     runGenetic();
 
     if(getResult().getFitness()<=0)
