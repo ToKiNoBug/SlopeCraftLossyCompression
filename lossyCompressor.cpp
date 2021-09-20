@@ -153,7 +153,9 @@ void LossyCompressor::runGenetic() {
     initialize();
     failTimes=0;
     generation=0;
+    emit progressRangeSet(0,0,maxGeneration);
     while(true) {
+        emit keepAwake();
         caculateFitness();
         select();
 
@@ -172,5 +174,7 @@ void LossyCompressor::runGenetic() {
         crossover();
         mutate();
         generation++;
+        emit progressAdd(1);
     }
+    emit progressRangeSet(0,maxGeneration,maxGeneration);
 }

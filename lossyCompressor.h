@@ -70,6 +70,10 @@ signals:
     void progressRangeSet(int min,int max,int val);
     void progressAdd(int);
     void keepAwake();
+#else
+    void (*progressRangeSet)(int min,int max,int val);
+    void (*progressAdd)(int);
+    void (*keepAwake)();
 #endif
 
 private:
