@@ -193,6 +193,10 @@ bool LossyCompressor::compress(ushort _maxHeight,bool _allowNaturalCompress) {
     allowNaturalCompress=_allowNaturalCompress;
     maxHeight=_maxHeight;
     runGenetic();
+
+    if(getResult().getFitness()<=0)
+        return false;
+    return true;
 }
 
 const gene& LossyCompressor::getResult() const {

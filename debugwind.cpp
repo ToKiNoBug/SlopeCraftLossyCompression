@@ -152,11 +152,30 @@ void DebugWind::on_BtnLoad_clicked() {
                 ui->mapCol->value(),
                 &currentCol[0]);
 
-    HeightLine HL;
     Eigen::Array<uchar,Eigen::Dynamic,1> temp;
     temp.setZero(currentCol.size());
-    HL.make(&currentCol[0],temp);
+    HL.make(&currentCol[0],temp,ui->allowNatural->isChecked());
 
+    QImage tempImg=EImage2QImage(HL.toImg(),3);
+
+    ui->ShowRaw->setPixmap(QPixmap::fromImage(tempImg));
+
+    ui->showRawHeight->setText(
+                "有损压缩前高度："+
+                QString::number(HL.maxHeight()));
+}
+
+
+void DebugWind::on_BtnCompress_clicked() {
+    bool success=Compressor->compress(ui->maxHeight->value(),
+                         ui->allowNatural->isChecked());
+    if(success)
+        std::cerr<<"压缩成功"<<std::endl;
+    else
+        std::cerr<<"压缩失败"<<std::endl;
+
+    HL.make(&currentCol[0],
+            Compressor->getResult().getDNA(),ui->allowNatural->isChecked());
     QImage tempImg=EImage2QImage(HL.toImg(),3);
 
     ui->ShowRaw->setPixmap(QPixmap::fromImage(tempImg));

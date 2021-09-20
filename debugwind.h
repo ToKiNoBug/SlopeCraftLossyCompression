@@ -24,11 +24,15 @@ private slots:
     void keepAwake();
     void on_BtnLoad_clicked();
 
+    void on_BtnCompress_clicked();
+
 private:
     Ui::DebugWind *ui;
     TokiSlopeCraft * Kernel;
     LossyCompressor * Compressor;
     std::vector<const TokiColor*>currentCol;
+
+    HeightLine HL;
 };
 
 EImage QImage2EImage(const QImage&);
