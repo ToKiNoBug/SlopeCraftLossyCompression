@@ -75,7 +75,7 @@ void DebugWind::initialize() {
 
     {
         QImage raw;
-        raw.load("D:/Git/25_ruby_std.png");
+        raw.load("D:/Git/33_4.png");
         EImage rawE=QImage2EImage(raw);
         bool allowed[64]={0};
         for (ushort baseColor=1;baseColor<64;baseColor++)
