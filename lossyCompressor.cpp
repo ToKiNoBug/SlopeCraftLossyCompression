@@ -1,3 +1,25 @@
+/*
+ Copyright © 2021  TokiNoBug
+This file is part of SlopeCraft.
+
+    SlopeCraft is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    SlopeCraft is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with SlopeCraft.  If not, see <https://www.gnu.org/licenses/>.
+
+    Contact with me:
+    github:https://github.com/ToKiNoBug
+    bilibili:https://space.bilibili.com/351429231
+*/
+
 #include "lossyCompressor.h"
 
 const float gene::unCaculatedSign=-65536*2;
@@ -5,7 +27,7 @@ const uchar gene::mutateMap[3][2]={{1,2},{0,2},{0,1}};
 
 const ushort LossyCompressor::popSize=50;
 const ushort LossyCompressor::maxFailTimes=30;
-const ushort LossyCompressor::maxGeneration=600;
+ushort LossyCompressor::maxGeneration=600;
 const double LossyCompressor::crossoverProb=0.9;
 const double LossyCompressor::mutateProb=0.01;
 const double LossyCompressor::initializeNonZeroRatio=0.05;
@@ -50,14 +72,16 @@ void gene::caculateFitness(const TokiColor** src,ushort maxHeight,
 
     HeightLine HL;
     //std::cerr<<"start to make\n";
-    float sumColorDiff=HL.make(src,DNA,allowNaturalCompress);
+    float meanColorDiff=HL.make(src,DNA,allowNaturalCompress);
+
+    meanColorDiff/=size();
 
     //std::cerr<<"sumColorDiff="<<sumColorDiff<<std::endl;
 
     if(HL.maxHeight()>maxHeight) {
         fitness=maxHeight-HL.maxHeight()-1;
     } else {
-        fitness=100.0/(1e-3f+sumColorDiff);
+        fitness=100.0/(1e-4f+meanColorDiff);
     }
 }
 void gene::crossover(gene* a,gene* b,ushort idx) {
@@ -81,6 +105,7 @@ LossyCompressor::LossyCompressor()
 }
 
 void LossyCompressor::initialize() {
+    //maxGeneration=200;
     population.resize(popSize);
     for(ushort i=0;i<popSize;i++) {
         population[i].initialize(source.size());
@@ -170,14 +195,16 @@ void LossyCompressor::runGenetic() {
         select();
         //std::cerr<<"select\n";
         if(population[eliteIdx].getFitness()>0&&failTimes>=maxFailTimes) {
-            std::cerr<<"iteration success"<<std::endl;
+            //std::cerr<<"iteration success"<<std::endl;
             break;
         }
         if(generation>=maxGeneration) {
+            /*
             if(population[eliteIdx].getFitness()>0)
                 std::cerr<<"iteration success"<<std::endl;
             else
                 std::cerr<<"iteration failed"<<std::endl;
+                */
             break;
         }
 
@@ -210,12 +237,19 @@ bool LossyCompressor::compress(ushort _maxHeight,bool _allowNaturalCompress) {
     allowNaturalCompress=_allowNaturalCompress;
     maxHeight=_maxHeight;
     eliteIdx=65535;
-    qDebug("参数设置完毕，开始运行遗传算法");
-    runGenetic();
-
-    if(getResult().getFitness()<=0)
-        return false;
-    return true;
+    //std::cerr<<"Genetic algorithm started\n";
+    ushort tryTimes=0;
+    maxGeneration=200;
+    while(tryTimes<3) {
+        runGenetic();
+        if(getResult().getFitness()<=0) {
+            tryTimes++;
+            maxGeneration*=2;
+        }
+        else
+            break;
+    }
+    return getResult().getFitness()>0;
 }
 
 const gene& LossyCompressor::getResult() const {

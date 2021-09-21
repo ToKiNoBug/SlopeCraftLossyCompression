@@ -159,7 +159,7 @@ void DebugWind::on_BtnLoad_clicked() {
 
     qDebug()<<"压缩前sumColorDiff="<<sumDiff;
     std::cerr<<"HL.size="<<HL.getBase().size()<<std::endl;
-    QImage tempImg=EImage2QImage(HL.toImg(),3);
+    QImage tempImg=EImage2QImage(HL.toImg(),1);
 
     ui->ShowRaw->setPixmap(QPixmap::fromImage(tempImg));
 
@@ -182,9 +182,9 @@ void DebugWind::on_BtnCompress_clicked() {
     CHL.make(&currentCol[0],
             Compressor->getResult().getDNA(),ui->allowNatural->isChecked());
 //fitness=100.0/(1e-3f+sumColorDiff)
-    std::cerr<<"compressed sumColorDiff="
-        <<100.0/Compressor->getResult().getFitness()-1e-3f<<std::endl;
-    QImage tempImg=EImage2QImage(CHL.toImg(),3);
+    std::cerr<<"compressed meanColorDiff="
+        <<100.0/Compressor->getResult().getFitness()-1e-4f<<std::endl;
+    QImage tempImg=EImage2QImage(CHL.toImg(),1);
 
     ui->ShowCompressed->setPixmap(QPixmap::fromImage(tempImg));
 }
